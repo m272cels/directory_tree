@@ -9,7 +9,7 @@ class DirectoryTree
   end
 
   def list
-    root.subdirectories.each_value { |subdirectory| subdirectory.list }
+    root.subdirectories.values.sort.each { |subdirectory| subdirectory.list }
   end
 
   def create(name)
@@ -37,7 +37,8 @@ class DirectoryTree
       puts "Cannot delete #{name} - #{name} does not exist"
       return
     end
-    parent_directory.delete(name)
+
+    parent_directory.delete(delete_target)
   end
 
   def move(name, destination)

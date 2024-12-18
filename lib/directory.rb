@@ -9,7 +9,7 @@ class Directory
 
   def list(indent = 0)
     puts '  ' * indent + name
-    subdirectories.each_value { |subdirectory| subdirectory.list(indent + 1) }
+    subdirectories.values.sort.each { |subdirectory| subdirectory.list(indent + 1) }
   end
 
   def create(name_or_subdirectory)
@@ -26,5 +26,9 @@ class Directory
 
   def find(name)
     subdirectories[name]
+  end
+
+  def <=>(other)
+    name <=> other.name
   end
 end

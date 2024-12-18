@@ -6,6 +6,8 @@ def test_directory_tree
   test_list
   test_delete
   test_move
+
+  given_integration_test
 end
 
 def set_up_test_tree
@@ -97,9 +99,9 @@ a
   c
     f
 d
+  e
   g
   h
-  e
 LIST
   assert_equals(output, expected_list_output)
 
@@ -115,13 +117,75 @@ LIST
   output = capture_io { directory_tree.list }
   expected_list_output = <<~LIST
 d
-  g
-  h
-  e
   a
     b
     c
       f
+  e
+  g
+  h
+LIST
+  assert_equals(output, expected_list_output)
+end
+
+def given_integration_test
+  puts 'given_integration_test'
+  directory_tree = DirectoryTree.new
+
+  output = capture_io do
+    directory_tree.create('fruits')
+    directory_tree.create('vegetables')
+    directory_tree.create('grains')
+    directory_tree.create('fruits/apples')
+    directory_tree.create('fruits/apples/fuji')
+  end
+  assert_equals(output, '')
+
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+fruits
+  apples
+    fuji
+grains
+vegetables
+LIST
+  assert_equals(output, expected_list_output)
+
+  output = capture_io do
+    directory_tree.create('grains/squash')
+    directory_tree.move('grains/squash', 'vegetables')
+    directory_tree.create('foods')
+    directory_tree.move('grains', 'foods')
+    directory_tree.move('fruits', 'foods')
+    directory_tree.move('vegetables', 'foods')
+  end
+  assert_equals(output, '')
+
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+foods
+  fruits
+    apples
+      fuji
+  grains
+  vegetables
+    squash
+LIST
+  assert_equals(output, expected_list_output)
+
+  output = capture_io { directory_tree.delete('fruits/apples') }
+  assert_equals(output, "Cannot delete fruits/apples - fruits does not exist\n")
+
+  output = capture_io { directory_tree.delete('foods/fruits/apples') }
+  assert_equals(output, '')
+
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+foods
+  fruits
+  grains
+  vegetables
+    squash
 LIST
   assert_equals(output, expected_list_output)
 end
