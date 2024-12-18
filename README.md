@@ -1,6 +1,21 @@
 # directory_tree
 Endpoint - Backend Coding Challenge
 
+For this challenge, I used Ruby and created a command line script. You can run the script from the root directory like this:
+
+```bash
+$ ruby bin/directories.rb
+```
+
+I also added a simple test suite for the underlying DirectoryTree class, which you can run like this:
+```bash
+$ ruby tests/test_directory_tree.rb
+```
+
+Original instructions for the challenge below:
+
+---
+
 We're expecting you to send your solution as a single page app, command line script or executable.  Some examples:
 
 ```bash
