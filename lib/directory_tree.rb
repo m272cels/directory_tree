@@ -14,14 +14,30 @@ class DirectoryTree
 
   def create(name)
     path = path(name)
-    new_directory = path.pop
+    create_target = path.pop
 
     parent_directory = find(path)
     if parent_directory.nil?
       puts "Cannot create #{name} - #{path.join('/')} does not exist"
       return
     end
-    parent_directory.create(new_directory)
+    parent_directory.create(create_target)
+  end
+
+  def delete(name)
+    path = path(name)
+    delete_target = path.pop
+
+    parent_directory = find(path)
+    if parent_directory.nil?
+      puts "Cannot delete #{name} - #{path.join('/')} does not exist"
+      return
+    end
+    if parent_directory.find(delete_target).nil?
+      puts "Cannot delete #{name} - #{name} does not exist"
+      return
+    end
+    parent_directory.delete(name)
   end
 
   private

@@ -1,29 +1,29 @@
 require_relative '../lib/directory_tree'
-require 'stringio'
-
-def capture_io
-  old_stdout = $stdout
-  $stdout = StringIO.new
-  yield
-  $stdout.string
-ensure
-  $stdout = old_stdout
-end
-
-def assert_equals(actual, expected)
-  if expected == actual
-    puts 'PASS'
-  else
-    puts "FAIL: #{actual} != #{expected}"
-  end
-end
+require_relative 'test_helpers'
 
 def test_directory_tree
   test_create
   test_list
+  test_delete
+end
+
+def set_up_test_tree
+  directory_tree = DirectoryTree.new
+
+  directory_tree.create('a')
+  directory_tree.create('a/b')
+  directory_tree.create('a/c')
+  directory_tree.create('d')
+  directory_tree.create('a/c/e')
+  directory_tree.create('a/c/f')
+  directory_tree.create('d/g')
+  directory_tree.create('d/h')
+
+  directory_tree
 end
 
 def test_create
+  puts 'test_create'
   directory_tree = DirectoryTree.new
 
   output = capture_io { directory_tree.create('a') }
@@ -33,33 +33,52 @@ def test_create
 end
 
 def test_list
-  directory_tree = DirectoryTree.new
+  puts 'test_list'
+  directory_tree = set_up_test_tree
 
-  directory_tree.create('a')
-  output = capture_io { directory_tree.list }
-  assert_equals(output, "a\n")
-  directory_tree.create('a/b')
-  directory_tree.create('c')
   output = capture_io { directory_tree.list }
   expected_list_output = <<~LIST
 a
   b
-c
+  c
+    e
+    f
+d
+  g
+  h
 LIST
   assert_equals(output, expected_list_output)
-  directory_tree.create('a/b/d')
-  directory_tree.create('a/b/e')
-  directory_tree.create('c/f')
-  directory_tree.create('c/g')
+end
+
+def test_delete
+  puts 'test_delete'
+  directory_tree = set_up_test_tree
+
+  output = capture_io { directory_tree.delete('a/c/e') }
+  assert_equals(output, '')
   output = capture_io { directory_tree.list }
   expected_list_output = <<~LIST
 a
   b
-    d
-    e
-c
-  f
+  c
+    f
+d
   g
+  h
+LIST
+
+  output = capture_io { directory_tree.delete('a/m/d') }
+  assert_equals(output, "Cannot delete a/m/d - a/m does not exist\n")
+  output = capture_io { directory_tree.delete('a/b/d') }
+  assert_equals(output, "Cannot delete a/b/d - a/b/d does not exist\n")
+
+  output = capture_io { directory_tree.delete('a') }
+  assert_equals(output, '')
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+d
+  g
+  h
 LIST
   assert_equals(output, expected_list_output)
 end

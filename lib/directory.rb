@@ -16,6 +16,10 @@ class Directory
     subdirectories[name] = Directory.new(name)
   end
 
+  def delete(name)
+    subdirectories.delete(name)
+  end
+
   def find(name)
     subdirectories[name]
   end

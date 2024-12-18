@@ -25,6 +25,8 @@ while true
     directory_tree.list
   when /^CREATE (.+)/
     directory_tree.create($1)
+  when /^DELETE (.+)/
+    directory_tree.delete($1)
   when 'HELP'
     puts help_message
   when 'QUIT', 'EXIT'
