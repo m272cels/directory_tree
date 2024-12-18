@@ -12,8 +12,12 @@ class Directory
     subdirectories.each_value { |subdirectory| subdirectory.list(indent + 1) }
   end
 
-  def create(name)
-    subdirectories[name] = Directory.new(name)
+  def create(name_or_subdirectory)
+    if name_or_subdirectory.respond_to?(:subdirectories)
+      subdirectories[name_or_subdirectory.name] = name_or_subdirectory
+    else
+      subdirectories[name_or_subdirectory] = Directory.new(name_or_subdirectory)
+    end
   end
 
   def delete(name)

@@ -40,6 +40,31 @@ class DirectoryTree
     parent_directory.delete(name)
   end
 
+  def move(name, destination)
+    path = path(name)
+    move_target = path.pop
+
+    parent_directory = find(path)
+    if parent_directory.nil?
+      puts "Cannot move #{name} - #{path.join('/')} does not exist"
+      return
+    end
+    if parent_directory.find(move_target).nil?
+      puts "Cannot move #{name} - #{name} does not exist"
+      return
+    end
+
+    destination_path = path(destination)
+    destination_directory = find(destination_path)
+    if destination_directory.nil?
+      puts "Cannot move #{name} - #{destination} does not exist"
+      return
+    end
+
+    target_directory = parent_directory.delete(move_target)
+    destination_directory.create(target_directory)
+  end
+
   private
 
   def find(path)

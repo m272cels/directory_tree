@@ -5,6 +5,7 @@ def test_directory_tree
   test_create
   test_list
   test_delete
+  test_move
 end
 
 def set_up_test_tree
@@ -79,6 +80,48 @@ LIST
 d
   g
   h
+LIST
+  assert_equals(output, expected_list_output)
+end
+
+def test_move
+  puts 'test_move'
+  directory_tree = set_up_test_tree
+
+  output = capture_io { directory_tree.move('a/c/e', 'd') }
+  assert_equals(output, '')
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+a
+  b
+  c
+    f
+d
+  g
+  h
+  e
+LIST
+  assert_equals(output, expected_list_output)
+
+  output = capture_io { directory_tree.move('a/m/d', 'd') }
+  assert_equals(output, "Cannot move a/m/d - a/m does not exist\n")
+  output = capture_io { directory_tree.move('a/b/d', 'd') }
+  assert_equals(output, "Cannot move a/b/d - a/b/d does not exist\n")
+  output = capture_io { directory_tree.move('a/c/f', 'i') }
+  assert_equals(output, "Cannot move a/c/f - i does not exist\n")
+
+  output = capture_io { directory_tree.move('a', 'd') }
+  assert_equals(output, '')
+  output = capture_io { directory_tree.list }
+  expected_list_output = <<~LIST
+d
+  g
+  h
+  e
+  a
+    b
+    c
+      f
 LIST
   assert_equals(output, expected_list_output)
 end

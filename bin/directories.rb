@@ -27,6 +27,8 @@ while true
     directory_tree.create($1)
   when /^DELETE (.+)/
     directory_tree.delete($1)
+  when /^MOVE (.+) (.+)/
+    directory_tree.move($1, $2)
   when 'HELP'
     puts help_message
   when 'QUIT', 'EXIT'
